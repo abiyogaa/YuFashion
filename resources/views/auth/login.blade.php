@@ -9,13 +9,19 @@
 <body class="bg-gradient-to-br from-slate-800 via-gray-700 to-zinc-800 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
         <h2 class="text-4xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-zinc-700">YuFashion</h2>
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Error!</strong>
+                <span class="block sm:inline">{{ $errors->first('email') }}</span>
+            </div>
+        @endif
         <form action="{{ route('login') }}" method="POST" class="space-y-6">
             @csrf
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
                 <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
                     focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500
-                    transition duration-300">
+                    transition duration-300" value="{{ old('email') }}">
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>

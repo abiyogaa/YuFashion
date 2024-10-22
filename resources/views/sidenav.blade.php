@@ -1,28 +1,41 @@
-@extends('layout')
-
-@section('content')
-    <div class="flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-md h-screen">
-            <div class="p-4">
-                <h2 class="text-xl font-semibold text-gray-800">Navigation</h2>
-            </div>
-            <nav class="mt-4">
-                <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Dashboard</a>
-                <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Profile</a>
-                <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Settings</a>
-                @auth
-                    <a href="{{ route('logout') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Logout</a>
-                @else
-                    <a href="{{ route('login') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Login</a>
-                @endauth
-            </nav>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 p-10">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome to Your Dashboard</h1>
-            <p class="text-gray-600">This is where your main content will go.</p>
-        </div>
+<nav class="bg-gradient-to-b from-gray-800 to-gray-900 text-white w-64 min-h-screen p-6 shadow-lg">
+    <div class="text-3xl font-bold mb-8 text-center text-teal-400 animate-pulse">Admin Dashboard</div>
+    <ul class="space-y-4">
+        <li>
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center py-3 px-4 hover:bg-opacity-25 hover:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-tachometer-alt mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center py-3 px-4 hover:bg-opacity-25 hover:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-users mr-3"></i>
+                <span>Manage Users</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center py-3 px-4 hover:bg-opacity-25 hover:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-box-open mr-3"></i>
+                <span>Manage Products</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center py-3 px-4 hover:bg-opacity-25 hover:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-shopping-cart mr-3"></i>
+                <span>Manage Orders</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center py-3 px-4 hover:bg-opacity-25 hover:bg-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-tags mr-3"></i>
+                <span>Manage Categories</span>
+            </a>
+        </li>
+    </ul>
+    <div class="mt-12">
+        <a href="#" class="flex items-center justify-center py-3 px-4 bg-teal-400 text-gray-900 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+            <i class="fas fa-arrow-left mr-3"></i>
+            <span>Back to Main Site</span>
+        </a>
     </div>
-@endsection
+</nav>
