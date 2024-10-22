@@ -22,6 +22,13 @@
                                 <i class="fas fa-tachometer-alt mr-2"></i>Admin Dashboard
                             </a>
                         @endif
+
+                        @if(auth()->user()->isUser())
+                            <a href="{{ route('user.dashboard') }}" class="text-white hover:text-gray-300 transition duration-300">
+                                <i class="fas fa-tshirt mr-2"></i>Your Clothing
+                            </a>
+                        @endif
+
                         <a href="#" class="text-white hover:text-gray-300 transition duration-300">
                             <i class="fas fa-user mr-2"></i>Profile
                         </a>

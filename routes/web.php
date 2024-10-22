@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\ManageCategoryController;
 use App\Http\Controllers\Admin\ManageClothingItemController;
 use App\Http\Controllers\Admin\ManageRentalController;
 use App\Http\Controllers\Admin\ManageUserController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\RentalController;
 use Illuminate\Support\Facades\Auth;
 
 // Root route
@@ -41,6 +43,15 @@ Route::middleware('auth')->group(function () {
         Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
         Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
     });
+
+    Route::middleware('role:user')->group(function () {
+        Route::get('user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+
+        Route::get('user/rent/{clothing_item_id}', [RentalController::class, 'create'])->name('rent.form');
+        Route::post('user/rent', [RentalController::class, 'store'])->name('rent.store');
+
+    });
+    
 });
 
 // Redirect to root if user accessed wrong route

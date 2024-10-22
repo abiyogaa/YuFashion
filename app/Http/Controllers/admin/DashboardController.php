@@ -25,6 +25,7 @@ class DashboardController extends Controller
         $this->clothes = $clothes;
         $this->category = $category;
     }
+    
 
     public function index()
     {
