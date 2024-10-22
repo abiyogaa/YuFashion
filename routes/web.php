@@ -7,9 +7,16 @@ use App\Http\Controllers\Admin\ManageCategoryController;
 use App\Http\Controllers\Admin\ManageClothingItemController;
 use App\Http\Controllers\Admin\ManageRentalController;
 use App\Http\Controllers\Admin\ManageUserController;
+use Illuminate\Support\Facades\Auth;
 
-// Public routes
+// Root route
 Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->role->name === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect('admin/dashboard');
+    }
     return redirect()->route('login');
 });
 
@@ -34,4 +41,9 @@ Route::middleware('auth')->group(function () {
         Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
         Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
     });
+});
+
+// Redirect to root if user accessed wrong route
+Route::fallback(function () {
+    return redirect('/');
 });
