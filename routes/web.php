@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\ManageCategoryController;
+use App\Http\Controllers\Admin\ManageClothingItemController;
 
 // Public routes
 Route::get('/', function () {
@@ -14,7 +16,6 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('role:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-        // Add more admin routes as needed
+        Route::resource('admin/categories', ManageCategoryController::class);
+        Route::resource('admin/clothing_items', ManageClothingItemController::class);
     });
 });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ClothingItem extends Model
@@ -17,9 +18,9 @@ class ClothingItem extends Model
     /**
      * Get the categories for the clothing item.
      */
-    public function categories(): HasMany
+    public function categories(): BelongsToMany
     {
-        return $this->hasMany(Category::class);
+        return $this->belongsToMany(Category::class, 'category_clothing_item');
     }
 
     /**
