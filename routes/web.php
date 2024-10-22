@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('user/rent/{clothing_item_id}', [RentalController::class, 'create'])->name('rent.form');
         Route::post('user/rent', [RentalController::class, 'store'])->name('rent.store');
+        Route::get('user/rentals', [RentalController::class, 'index'])->name('user.rentals');
 
     });
     

@@ -24,8 +24,8 @@
                         @endif
 
                         @if(auth()->user()->isUser())
-                            <a href="{{ route('user.dashboard') }}" class="text-white hover:text-gray-300 transition duration-300">
-                                <i class="fas fa-tshirt mr-2"></i>Your Clothing
+                            <a href="{{ route('user.rentals') }}" class="text-white hover:text-gray-300 transition duration-300">
+                                <i class="fas fa-tshirt mr-2"></i>Your rent
                             </a>
                         @endif
 
