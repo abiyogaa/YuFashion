@@ -22,7 +22,7 @@
                                 <i class="fas fa-tachometer-alt mr-2"></i>Admin Dashboard
                             </a>
                         @endif
-                        <a href="#" class="text-white hover:text-gray-300 transition duration-300">
+                        <a href="{{ route('profile.show') }}" class="text-white hover:text-gray-300 transition duration-300">
                             <i class="fas fa-user mr-2"></i>Profile
                         </a>
                         <form action="{{ route('logout') }}" method="POST" class="inline">

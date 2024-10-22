@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ManageCategoryController;
 use App\Http\Controllers\Admin\ManageClothingItemController;
 use App\Http\Controllers\Admin\ManageRentalController;
 use App\Http\Controllers\Admin\ManageUserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 
 // Root route
@@ -29,6 +30,10 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin routes
     Route::middleware('role:admin')->group(function () {
