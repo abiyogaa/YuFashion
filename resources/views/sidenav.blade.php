@@ -10,25 +10,25 @@
         <li>
             <a href="#" class="flex items-center py-3 px-4 hover:bg-white hover:bg-opacity-10 rounded-md transition duration-300">
                 <i class="fas fa-users mr-3"></i>
-                <span>Manage Users</span>
+                <span>Manage Pengguna</span>
             </a>
         </li>
         <li>
             <a href="{{ route('clothing_items.index') }}" class="flex items-center py-3 px-4 hover:bg-white hover:bg-opacity-10 rounded-md transition duration-300">
                 <i class="fas fa-box-open mr-3"></i>
-                <span>Manage Products</span>
+                <span>Manage Item</span>
             </a>
         </li>
         <li>
-            <a href="#" class="flex items-center py-3 px-4 hover:bg-white hover:bg-opacity-10 rounded-md transition duration-300">
+            <a href="{{ route('admin.rentals.index') }}" class="flex items-center py-3 px-4 hover:bg-white hover:bg-opacity-10 rounded-md transition duration-300">
                 <i class="fas fa-shopping-cart mr-3"></i>
-                <span>Manage Orders</span>
+                <span>Manage Rental</span>
             </a>
         </li>
         <li>
             <a href="{{ route('categories.index') }}" class="flex items-center py-3 px-4 hover:bg-white hover:bg-opacity-10 rounded-md transition duration-300">
                 <i class="fas fa-tags mr-3"></i>
-                <span>Manage Categories</span>
+                <span>Manage Kategori</span>
             </a>
         </li>
     </ul>

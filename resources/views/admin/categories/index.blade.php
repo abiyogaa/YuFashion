@@ -1,13 +1,13 @@
 @extends('layout')
 
-@section('title', 'Manage Categories')
+@section('title', 'Manage Kategori')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Manage Categories</h1>
+        <h1 class="text-3xl font-bold">Manage Kategori</h1>
         <a href="{{ route('categories.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Add New Category
+            Tambah Kategori Baru
         </a>
     </div>
 
@@ -27,9 +27,9 @@
         <table class="min-w-full table-auto">
             <thead>
                 <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Name</th>
-                    <th class="py-3 px-6 text-left">Description</th>
-                    <th class="py-3 px-6 text-center">Actions</th>
+                    <th class="py-3 px-6 text-left">Nama</th>
+                    <th class="py-3 px-6 text-left">Deskripsi</th>
+                    <th class="py-3 px-6 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
@@ -50,7 +50,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </a>
-                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">

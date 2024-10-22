@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\ManageCategoryController;
 use App\Http\Controllers\Admin\ManageClothingItemController;
-
+use App\Http\Controllers\Admin\ManageRentalController;
 // Public routes
 Route::get('/', function () {
     return redirect()->route('login');
@@ -28,5 +28,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::resource('admin/categories', ManageCategoryController::class);
         Route::resource('admin/clothing_items', ManageClothingItemController::class);
+        
+        Route::get('admin/rentals', [ManageRentalController::class, 'index'])->name('admin.rentals.index');
+        Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
+        Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
     });
 });

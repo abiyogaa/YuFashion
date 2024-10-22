@@ -1,13 +1,13 @@
 @extends('layout')
 
-@section('title', 'Edit Clothing Item')
+@section('title', 'Edit Item Pakaian')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Edit Clothing Item</h1>
+        <h1 class="text-3xl font-bold">Edit Item Pakaian</h1>
         <a href="{{ route('clothing_items.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            Back to List
+            Kembali ke Daftar
         </a>
     </div>
 
@@ -22,7 +22,7 @@
         @method('PUT')
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                Name
+                Nama
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') border-red-500 @enderror" id="name" type="text" name="name" value="{{ old('name', $clothingItem->name) }}" required>
             @error('name')
@@ -31,7 +31,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
-                Description
+                Deskripsi
             </label>
             <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('description') border-red-500 @enderror" id="description" name="description" rows="3" required>{{ old('description', $clothingItem->description) }}</textarea>
             @error('description')
@@ -40,7 +40,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="stock">
-                Stock
+                Stok
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('stock') border-red-500 @enderror" id="stock" type="number" name="stock" value="{{ old('stock', $clothingItem->stock) }}" required min="0">
             @error('stock')
@@ -49,7 +49,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="price">
-                Price (in cents)
+                Harga (dalam rupiah)
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('price') border-red-500 @enderror" id="price" type="number" name="price" value="{{ old('price', $clothingItem->price) }}" required min="0">
             @error('price')
@@ -58,7 +58,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="categories">
-                Categories
+                Kategori
             </label>
             <div class="mt-2 space-y-2">
                 @foreach($categories as $category)
@@ -76,7 +76,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="images">
-                Add New Images
+                Ganti Gambar Baru
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('images') border-red-500 @enderror" id="images" type="file" name="images[]" multiple accept="image/*">
             @error('images')
@@ -85,18 +85,18 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">
-                Current Images
+                Gambar Saat Ini
             </label>
             <div class="grid grid-cols-3 gap-4">
                 @foreach($clothingItem->images as $image)
                     <div class="relative">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Clothing Item Image" class="w-full h-32 object-cover rounded">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Gambar Item Pakaian" class="w-full h-32 object-cover rounded">
                 @endforeach
             </div>
         </div>
         <div class="flex items-center justify-between">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Update Clothing Item
+                Perbarui Item Pakaian
             </button>
         </div>
     </form>
