@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ManageCategoryController extends Controller
 {
@@ -17,8 +19,14 @@ class ManageCategoryController extends Controller
 
     public function index()
     {
-        $categories = $this->categoryService->getAllCategories();
-        return view('admin.categories.index', compact('categories'));
+        try {
+            $categories = $this->categoryService->getAllCategories();
+            Log::info('Retrieved all categories successfully');
+            return view('admin.categories.index', compact('categories'));
+        } catch (Exception $e) {
+            Log::error('Error retrieving categories: ' . $e->getMessage());
+            return view('admin.error', ['message' => 'An error occurred while loading categories.']);
+        }
     }
 
     public function create()
@@ -28,50 +36,79 @@ class ManageCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255|unique:categories',
+                'description' => 'required|string|max:1000',
+            ]);
 
-        $result = $this->categoryService->createCategory($validatedData);
+            $result = $this->categoryService->createCategory($validatedData);
 
-        if ($result) {
-            return redirect()->route('categories.index')->with('success', 'Category created successfully.');
-        } else {
-            return back()->with('error', 'Failed to create category.')->withInput();
+            if ($result) {
+                Log::info('Category created successfully', ['category' => $result]);
+                return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+            } else {
+                Log::warning('Failed to create category', ['data' => $validatedData]);
+                return back()->with('error', 'Failed to create category. Please try again.')->withInput();
+            }
+        } catch (Exception $e) {
+            Log::error('Error creating category: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while creating the category.')->withInput();
         }
     }
 
     public function edit($id)
     {
-        $category = $this->categoryService->getCategoryById($id);
-        return view('admin.categories.edit', compact('category'));
+        try {
+            $category = $this->categoryService->getCategoryById($id);
+            if (!$category) {
+                return redirect()->route('categories.index')->with('error', 'Category not found.');
+            }
+            return view('admin.categories.edit', compact('category'));
+        } catch (Exception $e) {
+            Log::error('Error retrieving category for edit: ' . $e->getMessage(), ['category_id' => $id]);
+            return redirect()->route('categories.index')->with('error', 'An error occurred while retrieving the category.');
+        }
     }
 
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255|unique:categories,name,' . $id,
+                'description' => 'required|string|max:1000',
+            ]);
 
-        $result = $this->categoryService->updateCategory($id, $validatedData);
+            $result = $this->categoryService->updateCategory($id, $validatedData);
 
-        if ($result) {
-            return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
-        } else {
-            return back()->with('error', 'Failed to update category.')->withInput();
+            if ($result) {
+                Log::info('Category updated successfully', ['category_id' => $id]);
+                return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+            } else {
+                Log::warning('Failed to update category', ['category_id' => $id, 'data' => $validatedData]);
+                return back()->with('error', 'Failed to update category. Please try again.')->withInput();
+            }
+        } catch (Exception $e) {
+            Log::error('Error updating category: ' . $e->getMessage(), ['category_id' => $id]);
+            return back()->with('error', 'An error occurred while updating the category.')->withInput();
         }
     }
 
     public function destroy($id)
     {
-        $result = $this->categoryService->deleteCategory($id);
+        try {
+            $result = $this->categoryService->deleteCategory($id);
 
-        if ($result) {
-            return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
-        } else {
-            return back()->with('error', 'Failed to delete category.');
+            if ($result) {
+                Log::info('Category deleted successfully', ['category_id' => $id]);
+                return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+            } else {
+                Log::warning('Failed to delete category', ['category_id' => $id]);
+                return back()->with('error', 'Failed to delete category. It may be in use or not found.');
+            }
+        } catch (Exception $e) {
+            Log::error('Error deleting category: ' . $e->getMessage(), ['category_id' => $id]);
+            return back()->with('error', 'An error occurred while deleting the category.');
         }
     }
 }

@@ -10,13 +10,6 @@
             Kembali ke Daftar
         </a>
     </div>
-
-    @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
-
     <form action="{{ route('clothing_items.update', $clothingItem->id) }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         @csrf
         @method('PUT')

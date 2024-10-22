@@ -18,7 +18,7 @@ class ClothingItemService
             return ClothingItem::with('categories', 'images')->get();
         } catch (Exception $e) {
             Log::error('Error fetching all clothing items: ' . $e->getMessage());
-            throw new Exception('Unable to fetch clothing items.');
+            throw new Exception('Tidak dapat mengambil data pakaian.');
         }
     }
 
@@ -28,7 +28,7 @@ class ClothingItemService
             return ClothingItem::with('categories', 'images')->findOrFail($id);
         } catch (Exception $e) {
             Log::error('Error fetching clothing item: ' . $e->getMessage());
-            throw new Exception('Unable to fetch clothing item.');
+            throw new Exception('Tidak dapat mengambil data pakaian.');
         }
     }
 
@@ -59,7 +59,7 @@ class ClothingItemService
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error creating clothing item: ' . $e->getMessage());
-            throw new Exception('Unable to create clothing item.');
+            throw new Exception('Tidak dapat membuat data pakaian baru.');
         }
     }
 
@@ -96,7 +96,7 @@ class ClothingItemService
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error updating clothing item: ' . $e->getMessage());
-            throw new Exception('Unable to update clothing item.');
+            throw new Exception('Tidak dapat memperbarui data pakaian.');
         }
     }
 
@@ -117,7 +117,7 @@ class ClothingItemService
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error deleting clothing item: ' . $e->getMessage());
-            throw new Exception('Unable to delete clothing item.');
+            throw new Exception('Tidak dapat menghapus data pakaian.');
         }
     }
 }

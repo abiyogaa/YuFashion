@@ -6,12 +6,6 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Edit Kategori</h1>
 
-    @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
-
     <form action="{{ route('categories.update', $category->id) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         @csrf
         @method('PUT')
