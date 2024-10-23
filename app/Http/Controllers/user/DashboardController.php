@@ -4,14 +4,30 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClothingItem;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clothingItems = ClothingItem::with(['categories', 'images'])->get();
-        
-        return view('user.dashboard', compact('clothingItems'));
+        try {
+            $search = $request->input('search');
+
+            // Mengambil semua clothing items beserta gambar dan kategorinya
+            $clothingItems = ClothingItem::with(['categories', 'images'])
+                ->when($search, function ($query, $search) {
+                    return $query->where('name', 'like', "%{$search}%")
+                                ->orWhereHas('categories', function ($query) use ($search) {
+                                    $query->where('name', 'like', "%{$search}%");
+                                });
+                })
+                ->get();
+            
+            return view('user.dashboard', compact('clothingItems'));
+        } catch (Exception $e) {
+            Log::error('Error in DashboardController@index: ' . $e->getMessage());
+            return back()->with('error', 'Tidak dapat mengambil data kostum. Silakan coba lagi nanti.');
+        }
     }
 
 }

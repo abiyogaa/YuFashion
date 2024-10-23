@@ -13,9 +13,11 @@
             <li>Total harga = (Harga sewa × Jumlah hari × Jumlah barang) + Biaya tambahan</li>
         </ul>
     </div>
+
     <form action="{{ route('rent.store') }}" method="POST" class="bg-white p-6 rounded shadow-md" id="rental-form">
         @csrf
         <input type="hidden" name="clothing_item_id" value="{{ $item->id }}">
+        <input type="hidden" name="available_stock" value="{{ $item->stock }}">
 
         <div class="mb-4">
             <label for="rental_date" class="block text-gray-700 font-bold mb-2">Tanggal Sewa</label>
@@ -35,8 +37,11 @@
         </div>
 
         <div class="mb-4">
-            <label for="quantity" class="block text-gray-700 font-bold mb-2">Jumlah</label>
-            <input type="number" id="quantity" name="quantity" min="1" class="border border-gray-300 p-2 w-full rounded @error('quantity') border-red-500 @enderror" required value="{{ old('quantity', 1) }}">
+            <div class="flex items-center justify-between mb-2">
+                <label for="quantity" class="text-gray-700 font-bold">Jumlah</label>
+                <span class="text-blue-600 text-sm">Stok tersedia: <span class="font-semibold">{{ $item->stock }}</span></span>
+            </div>
+            <input type="number" id="quantity" name="quantity" min="1" max="{{ $item->stock }}" class="border border-gray-300 p-2 w-full rounded @error('quantity') border-red-500 @enderror" required value="{{ old('quantity', 1) }}">
             @error('quantity')
                 <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
             @enderror
@@ -66,9 +71,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalPriceInput = document.getElementById('total_price');
     const lateFeeInfo = document.getElementById('late_fee_info');
     const lateFeeAmount = document.getElementById('late_fee_amount');
+    const availableStock = parseInt(document.querySelector('input[name="available_stock"]').value);
     const itemPrice = <?php echo $item->price; ?>;
     const LATE_FEE_PER_DAY = 10000;
     const MAX_NORMAL_DAYS = 5;
+
+    // Set max quantity based on available stock
+    quantityInput.max = availableStock;
+    
+    function validateQuantity() {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue > availableStock) {
+            quantityInput.value = availableStock;
+            alert(`Maksimal pemesanan adalah ${availableStock} unit`);
+        } else if (currentValue < 1) {
+            quantityInput.value = 1;
+        }
+    }
 
     function updateTotalPrice() {
         const rentalDate = new Date(rentalDateInput.value);
@@ -99,13 +118,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     rentalDateInput.addEventListener('change', function() {
-        returnDateInput.min = new Date(rentalDateInput.value);
+        const selectedDate = new Date(this.value);
+        const tomorrow = new Date(selectedDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        returnDateInput.min = tomorrow.toISOString().split('T')[0];
         returnDateInput.value = '';
         updateTotalPrice();
     });
 
     returnDateInput.addEventListener('change', updateTotalPrice);
-    quantityInput.addEventListener('change', updateTotalPrice);
+    quantityInput.addEventListener('change', function() {
+        validateQuantity();
+        updateTotalPrice();
+    });
+    quantityInput.addEventListener('input', validateQuantity);
 
     document.getElementById('rental-form').addEventListener('submit', function(e) {
         const rentalDate = new Date(rentalDateInput.value);
@@ -114,6 +141,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (returnDate <= rentalDate) {
             e.preventDefault();
             alert('Tanggal pengembalian harus setelah tanggal sewa.');
+            return;
+        }
+
+        const quantity = parseInt(quantityInput.value);
+        if (quantity > availableStock) {
+            e.preventDefault();
+            alert(`Maksimal pemesanan adalah ${availableStock} unit`);
         }
     });
 });
