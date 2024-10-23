@@ -11,12 +11,14 @@
 
 1. **Admin**
    - Login
-   - Menambah user
-   - Menambah item
-   - Menambah category item
-   - Melihat peminjaman kostum dan konfirmasi pengembalian
-   - Mengelola stok kostum dan status ketersediaan
-   - Melihat detail peminjaman pengguna
+   - Menambah, Mengedit, Menghapus user
+   - Menambah, Mengedit, Menghapus pakaian
+   - Menambah, Mengedit, Menghapus category pakaian
+   - Melihat peminjaman pakaian
+   - Approve peminjaman pakaian
+   - Konfirmasi pengembalian pakaian
+   - Mengelola stok pakaian
+   - Mencetak history peminjaman pengguna
 
 2. **User**
    - Login
@@ -26,7 +28,6 @@
    - Edit profile
 
 ## Screen Capture Gambar Schema Project Dari Database
-
-
+![image](images/DB_Schema.png)
 ## Screen Recorder Demo - Penjelasan Website
 [Screen Recorder Demo Penjelasan Website]
