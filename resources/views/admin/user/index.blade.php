@@ -8,19 +8,16 @@
         <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-zinc-800 bg-clip-text text-transparent">
             Manage Users
         </h1>
-        <div class="mt-4 md:mt-0">
+        <div class="mt-4 md:mt-0 flex items-center space-x-4">
             <div class="relative">
-                <input type="text" id="searchInput" placeholder="Search users..." 
+                <input type="text" id="searchInput" placeholder="Cari user..." 
                     class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             </div>
+            <a href="{{ route('users.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-plus mr-1"></i> Tambah User
+            </a>
         </div>
-    </div>
-
-    <div class="mb-4">
-        <a href="{{ route('users.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>Create New User
-        </a>
     </div>
 
     <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
@@ -28,10 +25,10 @@
             <table class="min-w-full table-auto">
                 <thead>
                     <tr class="bg-gradient-to-r from-slate-800 via-gray-700 to-zinc-800 text-white text-sm leading-normal">
-                        <th class="py-4 px-6 text-left">Name</th>
+                        <th class="py-4 px-6 text-left">Nama</th>
                         <th class="py-4 px-6 text-left">Email</th>
                         <th class="py-4 px-6 text-left">Role</th>
-                        <th class="py-4 px-6 text-center">Actions</th>
+                        <th class="py-4 px-6 text-center">Tindakan</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm">
@@ -61,7 +58,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" 
-                                        onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 
@@ -81,7 +78,7 @@
                             <td colspan="4" class="py-8 px-6 text-center">
                                 <div class="flex flex-col items-center justify-center space-y-3">
                                     <i class="fas fa-users text-4xl text-gray-400"></i>
-                                    <span class="font-medium text-gray-500">No users available.</span>
+                                    <span class="font-medium text-gray-500">Tidak ada user yang tersedia saat ini.</span>
                                 </div>
                             </td>
                         </tr>
