@@ -13,7 +13,7 @@
         <nav class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 to-zinc-300">
-                    <a href="#">YuFashion</a>
+                    <a href="/">YuFashion</a>
                 </div>
                 <div class="space-x-6">
                     @auth
@@ -29,7 +29,7 @@
                             </a>
                         @endif
 
-                        <a href="#" class="text-white hover:text-gray-300 transition duration-300">
+                        <a href="{{ route('profile') }}" class="text-white hover:text-gray-300 transition duration-300">
                             <i class="fas fa-user mr-2"></i>Profile
                         </a>
                         <form action="{{ route('logout') }}" method="POST" class="inline">

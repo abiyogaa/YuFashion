@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasOne;
 class Rental extends Model
 {
     protected $fillable = [
@@ -34,5 +34,10 @@ class Rental extends Model
     public function clothingItem(): BelongsTo
     {
         return $this->belongsTo(ClothingItem::class);
+    }
+
+    public function rentalReturn(): HasOne
+    {
+        return $this->hasOne(RentalReturn::class);
     }
 }
