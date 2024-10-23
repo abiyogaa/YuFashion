@@ -21,6 +21,9 @@
                 <tr>
                     <th class="border-b py-2 px-4 text-left">Item</th>
                     <th class="border-b py-2 px-4 text-left">Rental Date</th>
+                    <th class="border-b py-2 px-4 text-left">Return Date</th>
+                    <th class="border-b py-2 px-4 text-left">Quantity</th>
+                    <th class="border-b py-2 px-4 text-left">Total Price</th>
                     <th class="border-b py-2 px-4 text-left">Status</th>
                 </tr>
             </thead>
@@ -29,6 +32,9 @@
                     <tr>
                         <td class="border-b py-2 px-4">{{ $rental->clothingItem->name }}</td>
                         <td class="border-b py-2 px-4">{{ $rental->rental_date->format('Y-m-d') }}</td>
+                        <td class="border-b py-2 px-4">{{ $rental->return_date->format('Y-m-d') }}</td>
+                        <td class="border-b py-2 px-4">{{ $rental->quantity }}</td>
+                        <td class="border-b py-2 px-4">Rp {{ number_format($rental->total_price, 0, ',', '.') }}</td>
                         <td class="border-b py-2 px-4">{{ ucfirst($rental->status) }}</td>
                     </tr>
                 @endforeach
@@ -36,5 +42,35 @@
         </table>
     @endif
 
-    
+    <h2 class="text-2xl font-bold mb-4">Rental History</h2>
+
+    @if ($historyRentals->isEmpty())
+        <p class="text-gray-700">You have no rental history.</p>
+    @else
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border-b py-2 px-4 text-left">Item</th>
+                    <th class="border-b py-2 px-4 text-left">Rental Date</th>
+                    <th class="border-b py-2 px-4 text-left">Return Date</th>
+                    <th class="border-b py-2 px-4 text-left">Quantity</th>
+                    <th class="border-b py-2 px-4 text-left">Total Price</th>
+                    <th class="border-b py-2 px-4 text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($historyRentals as $rental)
+                    <tr>
+                        <td class="border-b py-2 px-4">{{ $rental->clothingItem->name }}</td>
+                        <td class="border-b py-2 px-4">{{ $rental->rental_date->format('Y-m-d') }}</td>
+                        <td class="border-b py-2 px-4">{{ $rental->return_date->format('Y-m-d') }}</td>
+                        <td class="border-b py-2 px-4">{{ $rental->quantity }}</td>
+                        <td class="border-b py-2 px-4">Rp {{ number_format($rental->total_price, 0, ',', '.') }}</td>
+                        <td class="border-b py-2 px-4">{{ ucfirst($rental->status) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
 @endsection

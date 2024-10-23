@@ -13,6 +13,7 @@ class Rental extends Model
         'rental_date',
         'return_date',
         'total_price',
+        'quantity',
         'status',
     ];
 
@@ -20,6 +21,7 @@ class Rental extends Model
         'rental_date' => 'date',
         'return_date' => 'date',
         'total_price' => 'integer',
+        'quantity' => 'integer',
     ];
 
     protected $attributes = [

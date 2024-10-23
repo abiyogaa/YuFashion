@@ -6,62 +6,59 @@ use App\Models\Rental;
 use App\Models\ClothingItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\RentalService;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class RentalController extends Controller
 {
+    protected $rentalService;
+
+    public function __construct(RentalService $rentalService)
+    {
+        $this->rentalService = $rentalService;
+    }
+
     public function index()
     {
-        // Ambil peminjaman aktif
-        $activeRentals = Rental::where('user_id', auth()->id())
-            ->whereIn('status', ['pending', 'approved'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Ambil riwayat peminjaman
-        $historyRentals = Rental::where('user_id', auth()->id())
-            ->whereIn('status', ['returned', 'canceled'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return view('user.rentals.index', compact('activeRentals', 'historyRentals'));
+        try {
+            $activeRentals = $this->rentalService->getActiveRentalsForUser(auth()->id());
+            $historyRentals = $this->rentalService->getHistoryRentalsForUser(auth()->id());
+            return view('user.rentals.index', compact('activeRentals', 'historyRentals'));
+        } catch (Exception $e) {
+            Log::error('Error in RentalController@index: ' . $e->getMessage());
+            return back()->with('error', 'Tidak dapat mengambil data penyewaan. Silakan coba lagi nanti.');
+        }
     }
 
     public function create($clothing_item_id)
     {
-        $item = ClothingItem::findOrFail($clothing_item_id);
-        return view('user.rent', compact('item'));
+        try {
+            $item = ClothingItem::findOrFail($clothing_item_id);
+            return view('user.rent', compact('item'));
+        } catch (Exception $e) {
+            Log::error('Error in RentalController@create: ' . $e->getMessage());
+            return back()->with('error', 'Item yang diminta tidak dapat ditemukan.');
+        }
     }
 
     public function store(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'rental_date' => 'required|date',
-        'return_date' => 'required|date|after:rental_date',
-        'total_price' => 'required|integer',
-    ]);
+    {
+        try {
+            $validatedData = $request->validate([
+                'clothing_item_id' => 'required|exists:clothing_items,id',
+                'rental_date' => 'required|date|after_or_equal:today',
+                'return_date' => 'required|date|after:rental_date',
+                'total_price' => 'required|numeric|min:0',
+                'quantity' => 'required|integer|min:1|max:2',
+            ]);
 
-    // Cek jumlah peminjaman aktif
-    $activeRentals = Rental::where('user_id', auth()->user()->id)
-        ->whereIn('status', ['pending', 'approved'])
-        ->count();
+            $this->rentalService->createRental(auth()->id(), $validatedData);
 
-    if ($activeRentals >= 2) {
-        return redirect()->back()->with('error', 'You cannot have more than 2 active rentals.');
+            return redirect()->route('user.dashboard')->with('success', 'Permintaan penyewaan berhasil diajukan.');
+        } catch (Exception $e) {
+            Log::error('Error in RentalController@store: ' . $e->getMessage());
+            return back()->with('error', 'Tidak dapat membuat penyewaan. Silakan coba lagi nanti.');
+        }
     }
-
-    // Jika tidak lebih dari 2, simpan peminjaman
-    Rental::create([
-        'user_id' => auth()->user()->id,
-        'clothing_item_id' => $request->clothing_item_id,
-        'rental_date' => $request->rental_date,
-        'return_date' => $request->return_date,
-        'total_price' => $request->total_price,
-        'status' => 'pending',
-    ]);
-
-    return redirect()->route('user.dashboard')->with('success', 'Rental request submitted.');
-}
-
-    
 }
