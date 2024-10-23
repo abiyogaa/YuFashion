@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\ManageCategoryController;
 use App\Http\Controllers\Admin\ManageClothingItemController;
 use App\Http\Controllers\Admin\ManageRentalController;
 use App\Http\Controllers\Admin\ManageUserController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\RentalController;
 use Illuminate\Support\Facades\Auth;
 
 // Root route
@@ -31,10 +32,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-
     // Admin routes
     Route::middleware('role:admin')->group(function () {
         Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -46,6 +43,16 @@ Route::middleware('auth')->group(function () {
         Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
         Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
     });
+
+    Route::middleware('role:user')->group(function () {
+        Route::get('user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+
+        Route::get('user/rent/{clothing_item_id}', [RentalController::class, 'create'])->name('rent.form');
+        Route::post('user/rent', [RentalController::class, 'store'])->name('rent.store');
+        Route::get('user/rentals', [RentalController::class, 'index'])->name('user.rentals');
+
+    });
+    
 });
 
 // Redirect to root if user accessed wrong route

@@ -37,19 +37,36 @@ class LoginController extends Controller
 
             if (!$result['status']) {
                 Log::info('Failed login attempt', ['email' => $credentials['email']]);
-                return redirect()->back()->withErrors(['email' => $result['message']])->withInput();
+                return redirect()->back()
+                    ->withErrors(['email' => $result['message']])
+                    ->withInput();
             }
 
-            if (Auth::user()->role->name === 'admin') {
-                Log::info('Admin logged in', ['user_id' => Auth::id()]);
-                return redirect()->route('admin.dashboard')->with('success', 'Logged in successfully!');
+            $user = Auth::user();
+
+            if ($user->role->name === 'admin') {
+                Log::info('Admin logged in', ['user_id' => $user->id]);
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Logged in successfully!');
             }
 
-            Log::info('User logged in', ['user_id' => Auth::id()]);
-            return redirect()->intended('/dashboard')->with('success', 'Logged in successfully!');
+            if ($user->role->name === 'user') {
+                Log::info('User logged in', ['user_id' => $user->id]);
+                return redirect()->route('user.dashboard')
+                    ->with('success', 'User Logged in successfully!');
+            }
+
+            // Jika role tidak dikenali
+            Auth::logout();
+            return redirect()->back()
+                ->withErrors(['email' => 'Invalid user role'])
+                ->withInput();
+
         } catch (Exception $e) {
             Log::error('Login error', ['error' => $e->getMessage()]);
-            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
         }
     }
 
@@ -59,10 +76,12 @@ class LoginController extends Controller
             $user_id = Auth::id();
             $this->authService->logout();
             Log::info('User logged out', ['user_id' => $user_id]);
-            return redirect()->route('login')->with('success', 'Logged out successfully!');
+            return redirect()->route('login')
+                ->with('success', 'Logged out successfully!');
         } catch (Exception $e) {
             Log::error('Logout error', ['error' => $e->getMessage()]);
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
         }
     }
 }
