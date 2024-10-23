@@ -4,17 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\UserService;
+use App\Services\RentalService;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Dompdf\Dompdf;
 
 class ManageUserController extends Controller
 {
     protected $userService;
+    protected $rentalService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, RentalService $rentalService)
     {
         $this->userService = $userService;
+        $this->rentalService = $rentalService;
     }
 
     public function index()
@@ -95,6 +99,32 @@ class ManageUserController extends Controller
         } catch (Exception $e) {
             Log::error('Error in ManageUserController@destroy: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while deleting the user.');
+        }
+    }
+
+    public function printRentalHistory($id)
+    {
+        try {
+            $user = $this->userService->getUserById($id);
+            $activeRentals = $this->rentalService->getActiveRentalsForUser($id);
+            $historyRentals = $this->rentalService->getHistoryRentalsForUser($id);
+            
+            $rentalHistory = $activeRentals->concat($historyRentals);
+
+            $dompdf = new Dompdf();
+            $html = view('admin.user.rental-history-pdf', [
+                'user' => $user,
+                'rentalHistory' => $rentalHistory
+            ])->render();
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            return $dompdf->stream('rental-history-' . $user->name . '.pdf');
+        } catch (Exception $e) {
+            Log::error('Error in ManageUserController@printRentalHistory: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating rental history.');
         }
     }
 }

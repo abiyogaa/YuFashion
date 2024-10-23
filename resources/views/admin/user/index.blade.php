@@ -69,6 +69,10 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    <a href="{{ route('admin.users.print-rental-history', $user->id) }}" 
+                                        class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-print"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

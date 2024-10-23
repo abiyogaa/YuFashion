@@ -16,16 +16,32 @@ class RentalService
     public function getAllRentals()
     {
         try {
-            $rentals = Rental::with(['user', 'clothingItem', 'rentalReturn'])
+            $activeRentals = Rental::with(['user', 'clothingItem', 'rentalReturn'])
+                ->whereIn('status', ['pending', 'approved'])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            foreach ($rentals as $rental) {
+            $historyRentals = Rental::with(['user', 'clothingItem', 'rentalReturn'])
+                ->whereIn('status', ['returned', 'canceled'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            foreach ($activeRentals as $rental) {
                 $rental->is_overdue = $this->isRentalOverdue($rental);
                 $rental->overdue_charges = $this->calculateOverdueCharges($rental);
             }
 
-            return $rentals;
+            foreach ($historyRentals as $rental) {
+                if ($rental->status === 'returned') {
+                    $rental->is_overdue = $this->isRentalOverdue($rental);
+                    $rental->overdue_charges = $rental->rentalReturn->additional_charges;
+                }
+            }
+
+            return [
+                'active' => $activeRentals,
+                'history' => $historyRentals
+            ];
         } catch (Exception $e) {
             Log::error('Error fetching all rentals: ' . $e->getMessage());
             throw new Exception('Tidak dapat mengambil data penyewaan. Silakan coba lagi nanti.');

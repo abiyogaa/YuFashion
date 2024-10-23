@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('admin/categories', ManageCategoryController::class);
         Route::resource('admin/clothing_items', ManageClothingItemController::class);
         Route::resource('admin/users', ManageUserController::class);
+        Route::get('admin/users/{id}/print-rental-history', [ManageUserController::class, 'printRentalHistory'])->name('admin.users.print-rental-history');
         
         Route::get('admin/rentals', [ManageRentalController::class, 'index'])->name('admin.rentals.index');
         Route::put('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');

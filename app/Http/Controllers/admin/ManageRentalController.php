@@ -23,7 +23,7 @@ class ManageRentalController extends Controller
             return view('admin.rentals.index', compact('rentals'));
         } catch (Exception $e) {
             Log::error('Error fetching rentals: ' . $e->getMessage());
-            return view('admin.error', ['message' => $e->getMessage()]);
+            return redirect()->route('admin.dashboard')->with('error', $e->getMessage());
         }
     }
 
