@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Models\Rental;
 use App\Models\ClothingItem;
+use App\Models\RentalReturn;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class RentalService
@@ -16,9 +16,16 @@ class RentalService
     public function getAllRentals()
     {
         try {
-            return Rental::with(['user', 'clothingItem'])
+            $rentals = Rental::with(['user', 'clothingItem', 'rentalReturn'])
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            foreach ($rentals as $rental) {
+                $rental->is_overdue = $this->isRentalOverdue($rental);
+                $rental->overdue_charges = $this->calculateOverdueCharges($rental);
+            }
+
+            return $rentals;
         } catch (Exception $e) {
             Log::error('Error fetching all rentals: ' . $e->getMessage());
             throw new Exception('Tidak dapat mengambil data penyewaan. Silakan coba lagi nanti.');
@@ -41,10 +48,17 @@ class RentalService
     public function getActiveRentalsForUser($userId)
     {
         try {
-            return Rental::where('user_id', $userId)
+            $rentals = Rental::where('user_id', $userId)
                 ->whereIn('status', ['pending', 'approved'])
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            foreach ($rentals as $rental) {
+                $rental->is_overdue = $this->isRentalOverdue($rental);
+                $rental->overdue_charges = $this->calculateOverdueCharges($rental);
+            }
+
+            return $rentals;
         } catch (Exception $e) {
             Log::error('Error fetching active rentals for user: ' . $e->getMessage());
             throw new Exception('Tidak dapat mengambil data penyewaan aktif. Silakan coba lagi nanti.');
@@ -54,10 +68,20 @@ class RentalService
     public function getHistoryRentalsForUser($userId)
     {
         try {
-            return Rental::where('user_id', $userId)
+            $rentals = Rental::with('rentalReturn')
+                ->where('user_id', $userId)
                 ->whereIn('status', ['returned', 'canceled'])
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            foreach ($rentals as $rental) {
+                if ($rental->status === 'returned') {
+                    $rental->is_overdue = $this->isRentalOverdue($rental);
+                    $rental->overdue_charges = $rental->rentalReturn->additional_charges;
+                }
+            }
+
+            return $rentals;
         } catch (Exception $e) {
             Log::error('Error fetching rental history for user: ' . $e->getMessage());
             throw new Exception('Tidak dapat mengambil riwayat penyewaan. Silakan coba lagi nanti.');
@@ -150,11 +174,11 @@ class RentalService
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::error('Rental not found: ' . $e->getMessage());
-            throw new Exception('Rental not found.');
+            throw new Exception('Penyewaan tidak ditemukan.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error rejecting rental: ' . $e->getMessage());
-            throw new Exception('Unable to reject rental. ' . $e->getMessage());
+            throw new Exception('Tidak dapat menolak penyewaan. ' . $e->getMessage());
         }
     }
 
@@ -165,9 +189,19 @@ class RentalService
             $rental = Rental::findOrFail($id);
             
             if ($rental->status !== 'approved') {
-                throw new Exception('This rental is not in approved status.');
+                throw new Exception('Penyewaan ini tidak dalam status disetujui.');
             }
+            
+            $additionalCharges = $this->calculateOverdueCharges($rental);
+            $totalPriceWithCharges = $rental->total_price + $additionalCharges;
 
+            RentalReturn::create([
+                'rental_id' => $rental->id,
+                'returned_date' => Carbon::now(),
+                'additional_charges' => $additionalCharges,
+                'total_price_with_charges' => $totalPriceWithCharges,
+            ]);
+            
             $clothingItem = $rental->clothingItem;
             $clothingItem->stock += $rental->quantity;
             $clothingItem->save();
@@ -175,40 +209,56 @@ class RentalService
             $rental->status = 'returned';
             $rental->save();
 
+
             DB::commit();
             return $rental;
-        } catch (ModelNotFoundException $e) {
-            DB::rollBack();
-            Log::error('Rental not found: ' . $e->getMessage());
-            throw new Exception('Rental not found.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error returning rental: ' . $e->getMessage());
-            throw new Exception('Unable to return rental. ' . $e->getMessage());
+            throw new Exception('Tidak dapat mengembalikan penyewaan. Silakan coba lagi nanti.');
         }
     }
 
-    public function checkOverdueRentals()
+    private function isRentalOverdue(Rental $rental)
     {
         try {
-            $overdueRentals = Rental::where('status', 'approved')
-                ->where('return_date', '<', Carbon::now()->toDateString())
-                ->get();
-
-            foreach ($overdueRentals as $rental) {
-                $daysOverdue = Carbon::now()->diffInDays(Carbon::parse($rental->return_date));
-                $overdueCharge = $daysOverdue * 10000;
-                
-                $rental->total_price += $overdueCharge;
-                $rental->save();
-
-                Log::info('Overdue rental found: ' . $rental->id . '. Added charge: $' . $overdueCharge);
+            if (!$rental || !$rental->return_date) {
+                return false;
             }
 
-            return $overdueRentals;
+            if ($rental->status === 'approved') {
+                $now = Carbon::now();
+                $returnDate = Carbon::parse($rental->return_date);
+                return $now->isAfter($returnDate);
+            } else if ($rental->status === 'returned' && $rental->rentalReturn) {
+                $returnedDate = Carbon::parse($rental->rentalReturn->returned_date);
+                $dueDate = Carbon::parse($rental->return_date);
+                return $returnedDate->isAfter($dueDate);
+            }
+            
+            return false;
         } catch (Exception $e) {
-            Log::error('Error checking overdue rentals: ' . $e->getMessage());
-            throw new Exception('Unable to check overdue rentals. ' . $e->getMessage());
+            Log::error('Error checking if rental is overdue: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function calculateOverdueCharges(Rental $rental)
+    {
+        try {
+            if (!$this->isRentalOverdue($rental)) {
+                return 0;
+            }
+
+            $returnDate = Carbon::parse($rental->return_date)->startOfDay();
+            $now = Carbon::now()->startOfDay();
+            $daysOverdue = $now->diffInDays($returnDate);
+            $overdueCharges = -$daysOverdue * 10000;
+
+            return $overdueCharges;
+        } catch (Exception $e) {
+            Log::error('Error calculating overdue charges: ' . $e->getMessage());
+            return 0;
         }
     }
 }

@@ -34,7 +34,7 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -46,8 +46,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('admin/users', ManageUserController::class);
         
         Route::get('admin/rentals', [ManageRentalController::class, 'index'])->name('admin.rentals.index');
-        Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
-        Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
+        Route::put('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
+        Route::put('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
+        Route::put('admin/rentals/{id}/return', [ManageRentalController::class, 'return'])->name('admin.rentals.return');
     });
 
     // User routes

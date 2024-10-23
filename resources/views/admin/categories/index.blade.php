@@ -4,54 +4,90 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Manage Kategori</h1>
-        <a href="{{ route('categories.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Tambah Kategori Baru
-        </a>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-zinc-800 bg-clip-text text-transparent">
+            Manage Kategori
+        </h1>
+        <div class="mt-4 md:mt-0 flex items-center space-x-4">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Cari kategori..." 
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            <a href="{{ route('categories.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-plus mr-1"></i> Tambah Kategori
+            </a>
+        </div>
     </div>
-    <div class="bg-white shadow-md rounded my-6">
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Nama</th>
-                    <th class="py-3 px-6 text-left">Deskripsi</th>
-                    <th class="py-3 px-6 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
-                @foreach ($categories as $category)
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
-                            <div class="flex items-center">
-                                <span class="font-medium">{{ $category->name }}</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-6 text-left">
-                            <span>{{ Str::limit($category->description, 50) }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                            <div class="flex item-center justify-center">
-                                <a href="{{ route('categories.edit', $category->id) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                </a>
-                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr class="bg-gradient-to-r from-slate-800 via-gray-700 to-zinc-800 text-white text-sm leading-normal">
+                        <th class="py-4 px-6 text-left">Nama</th>
+                        <th class="py-4 px-6 text-left">Deskripsi</th>
+                        <th class="py-4 px-6 text-center">Tindakan</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="text-gray-600 text-sm">
+                    @forelse ($categories as $category)
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
+                            <td class="py-4 px-6 text-left whitespace-nowrap">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-folder text-gray-500"></i>
+                                    </div>
+                                    <span class="font-medium">{{ $category->name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-left">
+                                <span>{{ Str::limit($category->description, 50) }}</span>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a href="{{ route('categories.edit', $category->id) }}" 
+                                        class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" 
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="py-8 px-6 text-center">
+                                <div class="flex flex-col items-center justify-center space-y-3">
+                                    <i class="fas fa-folder-open text-4xl text-gray-400"></i>
+                                    <span class="font-medium text-gray-500">Tidak ada kategori yang tersedia saat ini.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
+
 @endsection

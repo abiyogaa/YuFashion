@@ -25,34 +25,38 @@ class DashboardController extends Controller
         $this->clothes = $clothes;
         $this->category = $category;
     }
-    
 
     public function index()
     {
         try {
+            // Get counts for dashboard cards
             $totalRentals = $this->rental->count();
             $totalUsers = $this->user->count();
             $totalClothes = $this->clothes->count();
             $totalCategories = $this->category->count();
 
-            $recentTransactions = $this->rental->with(['user', 'clothingItem'])
+            // Get recent transactions with user and clothing item details
+            $recentTransactions = $this->rental
+                ->with(['user', 'clothingItem'])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
 
-            $popularItems = $this->clothes->withCount('rentals')
-                ->orderBy('rentals_count', 'desc')
+            // Get popular items with rental count
+            $popularItems = $this->clothes
+                ->withCount('rentals as rental_count')
+                ->orderBy('rental_count', 'desc')
                 ->take(5)
                 ->get();
 
-            return view('admin.dashboard', [
-                'totalRentals' => $totalRentals,
-                'totalUsers' => $totalUsers,
-                'totalClothes' => $totalClothes,
-                'totalCategories' => $totalCategories,
-                'recentTransactions' => $recentTransactions,
-                'popularItems' => $popularItems,
-            ]);
+            return view('admin.dashboard', compact(
+                'totalRentals',
+                'totalUsers', 
+                'totalClothes',
+                'totalCategories',
+                'recentTransactions',
+                'popularItems'
+            ));
         } catch (Exception $e) {
             Log::error('Error in dashboard index: ' . $e->getMessage());
             return view('admin.error', ['message' => 'An error occurred while loading the dashboard.']);

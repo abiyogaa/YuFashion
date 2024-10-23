@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('rental_id')->constrained('rentals')->onDelete('cascade');
             $table->date('returned_date');
             $table->integer('additional_charges')->default(0);
+            $table->integer('total_price_with_charges')->default(0);
             $table->timestamps();
         });
     }

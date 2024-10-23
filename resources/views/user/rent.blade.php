@@ -26,8 +26,8 @@
         </div>
 
         <div class="mb-4">
-            <label for="quantity" class="block text-gray-700 font-bold mb-2">Quantity (Max 2)</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="2" class="border border-gray-300 p-2 w-full rounded @error('quantity') border-red-500 @enderror" required value="{{ old('quantity', 1) }}">
+            <label for="quantity" class="block text-gray-700 font-bold mb-2">Quantity</label>
+            <input type="number" id="quantity" name="quantity" min="1" class="border border-gray-300 p-2 w-full rounded @error('quantity') border-red-500 @enderror" required value="{{ old('quantity', 1) }}">
             @error('quantity')
                 <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
             @enderror
@@ -82,11 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (returnDate <= rentalDate) {
             e.preventDefault();
             alert('Return date must be after the rental date.');
-        }
-
-        if (quantityInput.value > 2) {
-            e.preventDefault();
-            alert('Maximum quantity allowed is 2.');
         }
     });
 });

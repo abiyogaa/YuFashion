@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\Rental;
-use App\Models\ClothingItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\RentalService;
+use App\Services\ClothingItemService;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Carbon\Carbon;
 
 class RentalController extends Controller
 {
     protected $rentalService;
+    protected $clothingItemService;
 
-    public function __construct(RentalService $rentalService)
+    public function __construct(RentalService $rentalService, ClothingItemService $clothingItemService)
     {
         $this->rentalService = $rentalService;
+        $this->clothingItemService = $clothingItemService;
     }
 
     public function index()
@@ -24,6 +26,7 @@ class RentalController extends Controller
         try {
             $activeRentals = $this->rentalService->getActiveRentalsForUser(auth()->id());
             $historyRentals = $this->rentalService->getHistoryRentalsForUser(auth()->id());
+
             return view('user.rentals.index', compact('activeRentals', 'historyRentals'));
         } catch (Exception $e) {
             Log::error('Error in RentalController@index: ' . $e->getMessage());
@@ -34,7 +37,7 @@ class RentalController extends Controller
     public function create($clothing_item_id)
     {
         try {
-            $item = ClothingItem::findOrFail($clothing_item_id);
+            $item = $this->clothingItemService->getClothingItemById($clothing_item_id);
             return view('user.rent', compact('item'));
         } catch (Exception $e) {
             Log::error('Error in RentalController@create: ' . $e->getMessage());
@@ -50,7 +53,7 @@ class RentalController extends Controller
                 'rental_date' => 'required|date|after_or_equal:today',
                 'return_date' => 'required|date|after:rental_date',
                 'total_price' => 'required|numeric|min:0',
-                'quantity' => 'required|integer|min:1|max:2',
+                'quantity' => 'required|integer|min:1',
             ]);
 
             $this->rentalService->createRental(auth()->id(), $validatedData);
@@ -58,7 +61,7 @@ class RentalController extends Controller
             return redirect()->route('user.dashboard')->with('success', 'Permintaan penyewaan berhasil diajukan.');
         } catch (Exception $e) {
             Log::error('Error in RentalController@store: ' . $e->getMessage());
-            return back()->with('error', 'Tidak dapat membuat penyewaan. Silakan coba lagi nanti.');
+            return back()->with('error', $e->getMessage());
         }
     }
 }
