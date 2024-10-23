@@ -19,8 +19,9 @@ class ManageRentalController extends Controller
     public function index()
     {
         try {
-            $rentals = $this->rentalService->getAllRentals();
-            return view('admin.rentals.index', compact('rentals'));
+            $activeRentals = $this->rentalService->getActiveRentals()->paginate(25);
+            $historyRentals = $this->rentalService->getHistoryRentals()->paginate(25);
+            return view('admin.rentals.index', compact('activeRentals', 'historyRentals'));
         } catch (Exception $e) {
             Log::error('Error fetching rentals: ' . $e->getMessage());
             return redirect()->route('admin.dashboard')->with('error', $e->getMessage());

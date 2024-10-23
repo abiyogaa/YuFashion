@@ -17,7 +17,8 @@
         </div>
     </div>
 
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl mb-8">
+        <h2 class="text-xl font-semibold p-4 bg-gray-100">Active Rentals</h2>
         <div class="overflow-x-auto">
             <table class="min-w-full table-auto">
                 <thead>
@@ -37,7 +38,7 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm">
-                    @forelse ($rentals['active'] as $rental)
+                    @forelse ($activeRentals as $rental)
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
                             <td class="py-4 px-6 text-left whitespace-nowrap">
                                 <div class="flex items-center space-x-2">
@@ -141,19 +142,41 @@
                             <td colspan="12" class="py-8 px-6 text-center">
                                 <div class="flex flex-col items-center justify-center space-y-3">
                                     <i class="fas fa-box-open text-4xl text-gray-400"></i>
-                                    <span class="font-medium text-gray-500">Tidak ada penyewaan aktif yang tersedia saat ini.</span>
+                                    <span class="font-medium text-gray-500">No active rentals available.</span>
                                 </div>
                             </td>
                         </tr>
                     @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-3">
+            {{ $activeRentals->links() }}
+        </div>
+    </div>
 
-                    <tr class="bg-gray-100">
-                        <td colspan="12" class="py-4 px-6">
-                            <h2 class="text-lg font-semibold text-gray-700">Riwayat Penyewaan</h2>
-                        </td>
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <h2 class="text-xl font-semibold p-4 bg-gray-100">Rental History</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr class="bg-gradient-to-r from-slate-800 via-gray-700 to-zinc-800 text-white text-sm leading-normal">
+                        <th class="py-4 px-6 text-left">Pengguna</th>
+                        <th class="py-4 px-6 text-left">Item Pakaian</th>
+                        <th class="py-4 px-6 text-center">Tanggal Sewa</th>
+                        <th class="py-4 px-6 text-center">Tanggal Kembali</th>
+                        <th class="py-4 px-6 text-center">Tanggal Dikembalikan</th>
+                        <th class="py-4 px-6 text-center">Jumlah</th>
+                        <th class="py-4 px-6 text-center">Total Harga</th>
+                        <th class="py-4 px-6 text-center">Status</th>
+                        <th class="py-4 px-6 text-center">Terlambat</th>
+                        <th class="py-4 px-6 text-center">Denda</th>
+                        <th class="py-4 px-6 text-center">Total dengan Denda</th>
+                        <th class="py-4 px-6 text-center">Tindakan</th>
                     </tr>
-
-                    @forelse ($rentals['history'] as $rental)
+                </thead>
+                <tbody class="text-gray-600 text-sm">
+                    @forelse ($historyRentals as $rental)
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
                             <td class="py-4 px-6 text-left whitespace-nowrap">
                                 <div class="flex items-center space-x-2">
@@ -230,7 +253,7 @@
                             <td colspan="12" class="py-8 px-6 text-center">
                                 <div class="flex flex-col items-center justify-center space-y-3">
                                     <i class="fas fa-box-open text-4xl text-gray-400"></i>
-                                    <span class="font-medium text-gray-500">Tidak ada riwayat penyewaan yang tersedia saat ini.</span>
+                                    <span class="font-medium text-gray-500">No rental history available.</span>
                                 </div>
                             </td>
                         </tr>
@@ -238,17 +261,23 @@
                 </tbody>
             </table>
         </div>
+        <div class="px-4 py-3">
+            {{ $historyRentals->links() }}
+        </div>
     </div>
 </div>
 
 <script>
 document.getElementById('searchInput').addEventListener('keyup', function() {
     let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll('tbody tr');
+    let tables = document.querySelectorAll('table');
     
-    rows.forEach(row => {
-        let text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+    tables.forEach(table => {
+        let rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            let text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
     });
 });
 </script>
