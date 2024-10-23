@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ManageRentalController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\RentalController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 
 // Root route
@@ -17,7 +18,9 @@ Route::get('/', function () {
         if (Auth::user()->role->name === 'admin') {
             return redirect()->route('admin.dashboard');
         }
-        return redirect('admin/dashboard');
+        if (Auth::user()->role->name === 'user') {
+            return redirect()->route('user.dashboard');
+        }
     }
     return redirect()->route('login');
 });
@@ -31,6 +34,9 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin routes
     Route::middleware('role:admin')->group(function () {
@@ -38,12 +44,15 @@ Route::middleware('auth')->group(function () {
         Route::resource('admin/categories', ManageCategoryController::class);
         Route::resource('admin/clothing_items', ManageClothingItemController::class);
         Route::resource('admin/users', ManageUserController::class);
+        Route::get('admin/users/{id}/print-rental-history', [ManageUserController::class, 'printRentalHistory'])->name('admin.users.print-rental-history');
         
         Route::get('admin/rentals', [ManageRentalController::class, 'index'])->name('admin.rentals.index');
-        Route::post('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
-        Route::post('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
+        Route::put('admin/rentals/{id}/approve', [ManageRentalController::class, 'approve'])->name('admin.rentals.approve');
+        Route::put('admin/rentals/{id}/reject', [ManageRentalController::class, 'reject'])->name('admin.rentals.reject');
+        Route::put('admin/rentals/{id}/return', [ManageRentalController::class, 'return'])->name('admin.rentals.return');
     });
 
+    // User routes
     Route::middleware('role:user')->group(function () {
         Route::get('user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
 

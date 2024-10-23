@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('rental_date');
             $table->date('return_date');
             $table->integer('total_price');
+            $table->integer('quantity');
             $table->enum('status', ['pending', 'approved', 'returned', 'canceled'])->default('pending');
             $table->timestamps();
         });

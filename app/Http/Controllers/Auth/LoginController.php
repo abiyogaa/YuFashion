@@ -56,12 +56,6 @@ class LoginController extends Controller
                     ->with('success', 'User Logged in successfully!');
             }
 
-            // Jika role tidak dikenali
-            Auth::logout();
-            return redirect()->back()
-                ->withErrors(['email' => 'Invalid user role'])
-                ->withInput();
-
         } catch (Exception $e) {
             Log::error('Login error', ['error' => $e->getMessage()]);
             return redirect()->back()

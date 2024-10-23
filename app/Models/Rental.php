@@ -4,15 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Rental extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'user_id',
         'clothing_item_id',
         'rental_date',
         'return_date',
         'total_price',
+        'quantity',
         'status',
     ];
 
@@ -20,6 +24,7 @@ class Rental extends Model
         'rental_date' => 'date',
         'return_date' => 'date',
         'total_price' => 'integer',
+        'quantity' => 'integer',
     ];
 
     protected $attributes = [
@@ -34,5 +39,10 @@ class Rental extends Model
     public function clothingItem(): BelongsTo
     {
         return $this->belongsTo(ClothingItem::class);
+    }
+
+    public function rentalReturn(): HasOne
+    {
+        return $this->hasOne(RentalReturn::class);
     }
 }
