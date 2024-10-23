@@ -5,6 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\ClothingItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class DashboardController extends Controller
 {
@@ -13,7 +15,6 @@ class DashboardController extends Controller
         try {
             $search = $request->input('search');
 
-            // Mengambil semua clothing items beserta gambar dan kategorinya
             $clothingItems = ClothingItem::with(['categories', 'images'])
                 ->when($search, function ($query, $search) {
                     return $query->where('name', 'like', "%{$search}%")
