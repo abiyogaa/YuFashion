@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Models\Rental;
 use App\Models\User;
 use App\Models\ClothingItem;
@@ -29,20 +28,17 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            // Get counts for dashboard cards
             $totalRentals = $this->rental->count();
             $totalUsers = $this->user->count();
             $totalClothes = $this->clothes->count();
             $totalCategories = $this->category->count();
 
-            // Get recent transactions with user and clothing item details
             $recentTransactions = $this->rental
                 ->with(['user', 'clothingItem'])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
 
-            // Get popular items with rental count
             $popularItems = $this->clothes
                 ->withCount('rentals as rental_count')
                 ->orderBy('rental_count', 'desc')

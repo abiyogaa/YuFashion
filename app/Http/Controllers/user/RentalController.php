@@ -8,7 +8,6 @@ use App\Services\RentalService;
 use App\Services\ClothingItemService;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Carbon\Carbon;
 
 class RentalController extends Controller
 {

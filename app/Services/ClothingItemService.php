@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\ClothingItem;
-use App\Models\ClothingImage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
