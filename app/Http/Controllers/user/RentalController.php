@@ -11,16 +11,20 @@ class RentalController extends Controller
 {
     public function index()
     {
-        $rentals = Rental::where('user_id', auth()->id())
+        // Ambil peminjaman aktif
+        $activeRentals = Rental::where('user_id', auth()->id())
             ->whereIn('status', ['pending', 'approved'])
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // Ambil semua clothing items yang tersedia untuk disewa
-        $availableItems = ClothingItem::whereNotIn('id', $rentals->pluck('clothing_item_id'))->get();
+        // Ambil riwayat peminjaman
+        $historyRentals = Rental::where('user_id', auth()->id())
+            ->whereIn('status', ['returned', 'canceled'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('user.rentals.index', compact('rentals', 'availableItems'));
+        return view('user.rentals.index', compact('activeRentals', 'historyRentals'));
     }
-
 
     public function create($clothing_item_id)
     {
