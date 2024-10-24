@@ -17,10 +17,13 @@
         </div>
     </div>
 
-    @if ($activeRentals->count() >= 2)
+    @php
+        $totalActiveQuantity = $activeRentals->sum('quantity');
+    @endphp
+    @if ($totalActiveQuantity >= 2)
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
             <p class="font-bold">Warning:</p>
-            <p>You currently have two active rentals. Please return an item before renting more.</p>
+            <p>Anda saat ini memiliki total {{ $totalActiveQuantity }} item penyewaan aktif. Harap kembalikan satu item sebelum menyewa lagi.</p>
         </div>
     @endif
 

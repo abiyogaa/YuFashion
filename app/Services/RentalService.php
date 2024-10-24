@@ -87,10 +87,11 @@ class RentalService
     {
         DB::beginTransaction();
         try {
-            $activeRentals = $this->getActiveRentalsForUser($userId)->count();
+            $activeRentals = $this->getActiveRentalsForUser($userId);
+            $totalActiveQuantity = $activeRentals->sum('quantity');
 
-            if ($activeRentals >= 2) {
-                throw new Exception('Anda telah mencapai jumlah maksimum penyewaan aktif.');
+            if ($totalActiveQuantity + $data['quantity'] > 2) {
+                throw new Exception('Total jumlah item penyewaan aktif tidak boleh lebih dari 2.');
             }
 
             $clothingItem = ClothingItem::findOrFail($data['clothing_item_id']);
