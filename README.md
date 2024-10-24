@@ -30,4 +30,4 @@
 ## Screen Capture Gambar Schema Project Dari Database
 ![image](images/DB_Schema.png)
 ## Screen Recorder Demo - Penjelasan Website
-[![Screen Recorder Demo Penjelasan Website](images/thumbnail_video.png)](https://drive.google.com/file/d/15mme1f2nlkba18FFn7j1D5wisrfx32an/view?usp=sharing)
+[![Screen Recorder Demo Penjelasan Website](images/thumbnail_video_readme.png)](https://drive.google.com/file/d/15mme1f2nlkba18FFn7j1D5wisrfx32an/view?usp=sharing)
