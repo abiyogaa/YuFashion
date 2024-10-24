@@ -9,11 +9,22 @@
             Manage Penyewaan
         </h1>
         <div class="mt-4 md:mt-0">
-            <div class="relative">
-                <input type="text" id="searchInput" placeholder="Cari penyewaan..." 
-                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            <form method="GET" action="{{ route('admin.rentals.index') }}" class="relative">
+                <input type="text" 
+                       name="search" 
+                       value="{{ $search ?? '' }}"
+                       placeholder="Cari penyewaan..." 
+                       class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-            </div>
+                <button type="submit" class="ml-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    Search
+                </button>
+                @if($search)
+                    <a href="{{ route('admin.rentals.index') }}" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                        Clear
+                    </a>
+                @endif
+            </form>
         </div>
     </div>
 
@@ -150,8 +161,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-4 py-3">
-            {{ $activeRentals->links() }}
+        <div class="px-6 py-4">
+            {{ $activeRentals->appends(['search' => $search])->links() }}
         </div>
     </div>
 
@@ -261,25 +272,10 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-4 py-3">
-            {{ $historyRentals->links() }}
+        <div class="px-6 py-4">
+            {{ $historyRentals->appends(['search' => $search])->links() }}
         </div>
     </div>
 </div>
-
-<script>
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-    let tables = document.querySelectorAll('table');
-    
-    tables.forEach(table => {
-        let rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            let text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filter) ? '' : 'none';
-        });
-    });
-});
-</script>
 
 @endsection

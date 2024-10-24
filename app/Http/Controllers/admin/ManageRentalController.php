@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\RentalService;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Http\Request;
 
 class ManageRentalController extends Controller
 {
@@ -16,12 +17,17 @@ class ManageRentalController extends Controller
         $this->rentalService = $rentalService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $activeRentals = $this->rentalService->getActiveRentals()->paginate(25);
-            $historyRentals = $this->rentalService->getHistoryRentals()->paginate(25);
-            return view('admin.rentals.index', compact('activeRentals', 'historyRentals'));
+            $validatedData = $request->validate([
+                'search' => 'nullable|string|max:255'
+            ]);
+
+            $search = $validatedData['search'] ?? null;
+            $activeRentals = $this->rentalService->getActiveRentals(10, $search); 
+            $historyRentals = $this->rentalService->getHistoryRentals(10, $search); 
+            return view('admin.rentals.index', compact('activeRentals', 'historyRentals', 'search'));
         } catch (Exception $e) {
             Log::error('Error fetching rentals: ' . $e->getMessage());
             return redirect()->route('admin.dashboard')->with('error', $e->getMessage());

@@ -13,18 +13,78 @@ use Carbon\Carbon;
 
 class RentalService
 {
-    public function getActiveRentals()
+    public function getActiveRentals($perPage = 10, $search = null)
     {
-        return Rental::with(['user', 'clothingItem'])
-            ->whereIn('status', ['pending', 'approved'])
-            ->orderBy('created_at', 'desc');
+        try {
+            $query = Rental::with(['user', 'clothingItem'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->orderBy('created_at', 'desc');
+
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('user', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('clothingItem', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('rental_date', 'like', "%{$search}%")
+                    ->orWhere('return_date', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
+                });
+            }
+
+            $rentals = $query->paginate($perPage);
+
+            $rentals->getCollection()->transform(function ($rental) {
+                $rental->is_overdue = $this->isRentalOverdue($rental);
+                $rental->overdue_charges = $this->calculateOverdueCharges($rental);
+                return $rental;
+            });
+
+            return $rentals;
+        } catch (Exception $e) {
+            Log::error('Error fetching active rentals: ' . $e->getMessage());
+            throw new Exception('Unable to fetch active rentals. Please try again later.');
+        }
     }
 
-    public function getHistoryRentals()
+    public function getHistoryRentals($perPage = 10, $search = null)
     {
-        return Rental::with(['user', 'clothingItem'])
-            ->whereIn('status', ['returned', 'canceled'])
-            ->orderBy('created_at', 'desc');
+        try {
+            $query = Rental::with(['user', 'clothingItem', 'rentalReturn'])
+                ->whereIn('status', ['returned', 'canceled'])
+                ->orderBy('created_at', 'desc');
+
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('user', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('clothingItem', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('rental_date', 'like', "%{$search}%")
+                    ->orWhere('return_date', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
+                });
+            }
+
+            $rentals = $query->paginate($perPage);
+
+            $rentals->getCollection()->transform(function ($rental) {
+                if ($rental->status === 'returned') {
+                    $rental->is_overdue = $this->isRentalOverdue($rental);
+                    $rental->overdue_charges = $rental->rentalReturn->additional_charges;
+                }
+                return $rental;
+            });
+
+            return $rentals;
+        } catch (Exception $e) {
+            Log::error('Error fetching rental history: ' . $e->getMessage());
+            throw new Exception('Unable to fetch rental history. Please try again later.');
+        }
     }
 
     public function getAllPendingRentals()
