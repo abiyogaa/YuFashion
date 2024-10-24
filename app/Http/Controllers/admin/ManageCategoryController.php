@@ -26,7 +26,7 @@ class ManageCategoryController extends Controller
             return view('admin.categories.index', compact('categories'));
         } catch (Exception $e) {
             Log::error('Error retrieving categories: ' . $e->getMessage());
-            return view('admin.error', ['message' => 'An error occurred while loading categories.']);
+            return back()->with('error', 'Terjadi kesalahan saat memuat daftar kategori.');
         }
     }
 

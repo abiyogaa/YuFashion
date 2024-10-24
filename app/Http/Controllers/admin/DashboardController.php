@@ -55,7 +55,7 @@ class DashboardController extends Controller
             ));
         } catch (Exception $e) {
             Log::error('Error in dashboard index: ' . $e->getMessage());
-            return view('admin.error', ['message' => 'An error occurred while loading the dashboard.']);
+            return back()->with('error', 'Terjadi kesalahan saat memuat dashboard.');
         }
     }
 
@@ -66,7 +66,7 @@ class DashboardController extends Controller
             return view('admin.users', ['users' => $users]);
         } catch (Exception $e) {
             Log::error('Error in users list: ' . $e->getMessage());
-            return view('admin.error', ['message' => 'An error occurred while loading the users list.']);
+            return back()->with('error', 'Terjadi kesalahan saat memuat daftar pengguna.');
         }
     }
 
@@ -77,7 +77,7 @@ class DashboardController extends Controller
             return view('admin.clothes', ['clothes' => $clothes]);
         } catch (Exception $e) {
             Log::error('Error in clothes list: ' . $e->getMessage());
-            return view('admin.error', ['message' => 'An error occurred while loading the clothes list.']);
+            return back()->with('error', 'Terjadi kesalahan saat memuat daftar pakaian.');
         }
     }
 
@@ -88,7 +88,7 @@ class DashboardController extends Controller
             return view('admin.rentals', ['rentals' => $rentals]);
         } catch (Exception $e) {
             Log::error('Error in rentals list: ' . $e->getMessage());
-            return view('admin.error', ['message' => 'An error occurred while loading the rentals list.']);
+            return back()->with('error', 'Terjadi kesalahan saat memuat daftar penyewaan.');
         }
     }
 }
