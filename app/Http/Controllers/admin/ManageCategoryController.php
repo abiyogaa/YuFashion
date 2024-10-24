@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Exception;
 
 class ManageCategoryController extends Controller
@@ -51,6 +52,11 @@ class ManageCategoryController extends Controller
                 Log::warning('Failed to create category', ['data' => $validatedData]);
                 return back()->with('error', 'Failed to create category. Please try again.')->withInput();
             }
+        } catch (ValidationException $e) {
+            if ($e->validator->errors()->has('name')) {
+                return back()->with('error', 'A category with this name already exists.')->withInput();
+            }
+            return back()->with('error', 'Please check your input and try again.')->withInput();
         } catch (Exception $e) {
             Log::error('Error creating category: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while creating the category.')->withInput();
